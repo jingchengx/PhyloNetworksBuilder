@@ -1,0 +1,39 @@
+language: julia
+os:
+  - linux
+julia:
+  - 1.0
+notifications:
+  email: false
+git:
+  depth: 99999999
+cache:
+  timeout: 1000
+  directories:
+    - downloads
+env:
+  global:
+    - BINARYBUILDER_DOWNLOADS_CACHE=downloads
+    - BINARYBUILDER_AUTOMATIC_APPLE=false
+sudo: required
+
+# Before anything else, get the latest versions of things
+before_script:
+  - julia -e 'using Pkg; pkg"add BinaryProvider"; pkg"add BinaryBuilder#master"; Pkg.build()'
+
+script:
+  - julia build_tarballs.jl
+
+
+deploy:
+    provider: releases
+    api_key:
+        # Note; this api_key is only valid for jokeitei/PhyloNetworksBuilder; you need
+        # to make your own: https://docs.travis-ci.com/user/deployment/releases/
+        secure: hz7OR6E0L1ViNzzwIn9XpzFAxTsbkZ+bqh/bXZR3zZiO2KR66dGJ0ug66NscXmRk2loD5+U+TBf0ivI5y/IqgxLwTYW6j9F2MNiaAP3MsIy3GKostcFH8tYiQT+R3xWxZC1FHxYMiRo6UQqTZ66i4dp2oL6ND5YHuVomA1kHZXnzdar11YXj45d4Wryyqc/O4CIkNwUiNjH3081rSK+dgy3BlsE4HwN3Qql5Zv4A5shwKHDvudk96M3Uq6D7hmbhfTP65TVG4DyMNcFyjzLEx3dkMNa2u2Y51SJkotitT5ji1Y1ebut/PXKJnBRqWaLyYveVdaLD7yKUmH1tKTUW9sbgikU0+mrjgYknqnCOvIhdN0zqjEEcbtNiC4bUMHaYoVaBeTQBfrIMb+tUIMXDAGz7x32anrPR5a27a5FdcA/FYdqUasd7q+5MsUh5jkkFUdFeLzZCE22bxwxWMMFftCsEFc4C3k4hLY2bTtwFPLaSYJ7suGjTXQ2kvlfFEke77i7pcFs0mRzzHgdMHGJn3MngRH+lW2il+Xdub3p8lG8UtIk7xPEU3u0duIXn2io0JUuglGPMtz3PF+PRHxNGrLAFLMJseBYhNTJqeqafwcMlV+aHVMTZ+j11u9fvlaKVwlOj+ZHMUC0dtrOhKqQ6tsZ6BcmdCdaKjO4e5ZpWFwU=
+    file_glob: true
+    file: products/*
+    skip_cleanup: true
+    on:
+        repo: jokeitei/PhyloNetworksBuilder
+        tags: true
